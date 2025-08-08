@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RAZR_PointCRep.Android")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+249fa43684a0487cf1f5bb7ae53ce65ed02ee9aa")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+e8d4ff306221acc6878d7464ca4596e94f1a5cee")]
 [assembly: System.Reflection.AssemblyProductAttribute("RAZR_PointCRep.Android")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RAZR_PointCRep.Android")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

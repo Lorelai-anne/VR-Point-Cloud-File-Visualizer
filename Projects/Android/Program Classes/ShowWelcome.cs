@@ -15,21 +15,27 @@ namespace RAZR_PointCRep.Show
     {
         bool winEn = false;
 
+        Tex logo;
+        Sprite sprite;
 
         string message = "Welcome to Resonant Sciences point cloud representation program!";
         string message2 = "Take some time to place some spatial nodes!\nYou can move the cube by pinching and show a hand menu by raising your left hand";
         public void Initialize()
         {
+            logo = Tex.FromFile("ResonantSciencesLogo.png");
+            sprite = Sprite.FromTex(logo);
         }
         float Hslider = 0.5f;
-        float Vslider = 0.5f;
         int radioOption = 1;
         public void Step()
         {
-            Hierarchy.Push(Matrix.TR(0, -0.1f, -0.6f, Quat.LookDir(0, 0, 1)));
-            Text.Add(message, Matrix.S(1.25f), V.XY(.6f, 0), TextFit.Wrap, TextAlign.TopCenter, TextAlign.TopLeft);
-            Text.Add(message2, Matrix.S(1.25f), V.XY(.6f, 0), TextFit.Wrap, TextAlign.BottomCenter, TextAlign.BottomLeft);
-            Hierarchy.Pop();
+            sprite.Draw(Matrix.TR(0, 1, -1.5f, Quat.LookDir(0, 0, 1)), TextAlign.TopCenter);
+            
+            Text.Add("Welcome to Resonant Sciences point cloud representation application!", Matrix.TR(0, -.05f, -1.5f, Quat.LookDir(0,0,1)));
+            Text.Add("Take some time to place some spatial nodes", Matrix.TR(0, -.1f, -1.5f, Quat.LookDir(0, 0, 1)));
+            Text.Add("You can move the cube by pinching and show a hand menu by raising your left hand", Matrix.TR(0, -.15f, -1.5f, Quat.LookDir(0, 0, 1)));
+
+
 
             Handed handed = Handed.Left;
 

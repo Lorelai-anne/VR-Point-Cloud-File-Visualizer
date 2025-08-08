@@ -32,14 +32,14 @@ public static class Program
 
     static Mesh floorMesh;
     static Material floorMat;
-    static Pose windowDemoPose = new Pose(-0.7f, 0, -0.3f, Quat.LookDir(1, 0, 1));
+    static Pose windowDemoPose = new Pose(-0.6f, 0, -0.4f, Quat.LookDir(1, 0, 1));
     static Sprite powerButton;
     static SceneType sceneCategory = SceneType.Programs;
 
     public static bool WindowDemoShow = false;
 
 
-    static Pose window2Pose = Matrix.TR(0.2f, -0.1f, -0.5f, Quat.LookDir(-Vec3.Forward)).Pose;
+    static Pose window2Pose = Matrix.TR(.5f, 0, -0.4f, Quat.LookDir(-1, 0, 1)).Pose;
 
     public static SpatialEntityPoseHandler handler; //making it public static so i can access anchor pose outside of class
 
@@ -75,7 +75,7 @@ public static class Program
         Init();
 
         int anchorNum = 0; //numbers of anchors currently initializes
-        Pose cubePose = new Pose(0, 0, -0.5f);
+        Pose cubePose = new Pose(.4f, .05f, -0.4f);
         Model cube = Model.FromMesh(
             Mesh.GenerateCube(Vec3.One * 0.1f),
             Material.UI);

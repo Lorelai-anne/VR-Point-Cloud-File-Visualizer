@@ -165,10 +165,13 @@ namespace RAZR_PointCRep.Show
             return downsampled.ToArray();
         }
 
-
+        // For models to appear in the asset window they must be preloaded like these
         Model model2 = Model.FromFile("DamagedHelmet.gltf");
         Model model3 = Model.FromFile("Cosmonaut.glb");
         Model model6 = Model.FromFile("suzanne_bin.stl");
+
+        bool winEn = false;
+        Pose simpleWinPose = Matrix.TR(0, -0.1f, -0.6f, Quat.LookDir(0, 0, 1)).Pose;
 
 
         SpatialEntityPoseHandler handler = Program.handler; //initializes stepper to the spatial anchor initialized in program, if there is one
@@ -339,8 +342,11 @@ namespace RAZR_PointCRep.Show
             }
             return fileContent;
         }
+
+
         public void Initialize()
         {
+            // A point cloud must be created in this method, whether is calling a method that creates a point cloud or using new PointCloud(), it has to be called
             Log.Info($"INITIAL POINTCLOUD POSE POSITION : {cloudPose.position}");
             if(handler != null)
             {
@@ -359,94 +365,7 @@ namespace RAZR_PointCRep.Show
         {
         }
 
-        
-        
-        List<IAsset> filteredAssets = new List<IAsset>();
-        Type filterType = typeof(IAsset);
-        float filterScroll = 0;
-        const int filterScrollCt = 12;
-
-        /// <summary>
-        /// Visualizes models in the asset window
-        /// </summary>
-        /// <param name="item"></param>
-        void VisualizeModel(Model item)
-        {
-            UI.Model(item, V.XX(UI.LineHeight));
-            UI.SameLine();
-        }
-
-        /// <summary>
-        /// Updates the Asset window with the chosen filter
-        /// </summary>
-        /// <param name="type"></param>
-        void UpdateFilter(Type type)
-        {
-            filterType = type;
-            filterScroll = 0.0f;
-            filteredAssets.Clear();
-
-            // Here's where the magic happens! `Assets.Type` can take a Type, or a
-            // generic <T>, and will give a list of all assets that match that
-            // type!
-            filteredAssets.AddRange(Assets.Type(filterType));
-        }
-
-        /// <summary>
-        /// Shows Models availible to use for point clouds
-        /// </summary>
-        //originally going to use file picker, according to research it doesn't run natively on stereokit
-        public void AssetWindow()
-        {
-            UISettings settings = UI.Settings;
-            float height = filterScrollCt * (UI.LineHeight + settings.gutter) + settings.margin * 2;
-
-            UI.WindowBegin("Menu", ref simpleWinPose, V.XY(0.5f, height));
-                UI.LayoutPushCut(UICut.Left, 0.08f);
-            UI.PanelAt(UI.LayoutAt, UI.LayoutRemaining);
-
-            UI.Label("Filter");
-
-            UI.HSeparator();
-
-            Vec2 size1 = new Vec2(0.08f, 0);
-
-            // A radio button selection for what to filter by
-
-            if (UI.Radio("Model", filterType == typeof(Model), size1)) UpdateFilter(typeof(Model));
-            UI.SameLine();
-            //if (UI.Radio("All", filterType == typeof(IAsset), size1)) UpdateFilter(typeof(IAsset));
-
-            UI.LayoutPop();
-
-            UI.LayoutPushCut(UICut.Right, UI.LineHeight);
-            UI.VSlider("scroll", ref filterScroll, 0, Math.Max(0, filteredAssets.Count - 3), 1, 0, UIConfirm.Pinch);
-            UI.LayoutPop();
-
-
-            // Used to visual the models in the button, as well as create a button with the asset visualization and name
-            for (int i = (int)filterScroll; i < Math.Min(filteredAssets.Count, (int)filterScroll + filterScrollCt); i++)
-            {
-                IAsset asset = filteredAssets[i];
-                UI.PushId(i);
-                switch (asset)
-                {
-                    case Model item: VisualizeModel(item); break;
-                }
-                UI.PopId();
-                if (UI.Button(string.IsNullOrEmpty(asset.Id) ? "(null)" : asset.Id, V.XY(UI.LayoutRemaining.x, 0))) // When pressed, will create point cloud of model based of of vertices in model
-                {
-                    Model model = Model.FromFile(string.IsNullOrEmpty(asset.Id) ? "(null)" : asset.Id);
-                    cloud = new PointCloud(pointSize, model);
-                    cloudScale = 0.5f / model.Bounds.dimensions.Length;
-                }
-            }
-            UI.WindowEnd();
-        }
-        // Think of this almost as the 'main' method of the class
-        bool winEn = false;
-        Pose simpleWinPose = Matrix.TR(0, -0.1f, -0.6f, Quat.LookDir(0, 0, 1)).Pose;
-        Pose simpleWinPose2 = Matrix.TR(0, -0.1f, -0.6f, Quat.LookDir(0, 0, 1)).Pose;
+        // This is updated every frame
         public async void Step()
         {
             bool secWin = winEn;
@@ -472,6 +391,7 @@ namespace RAZR_PointCRep.Show
                 Quat.LookAt(at, across, at - down) * Quat.FromAngles(0, handed == Handed.Left ? 90 : -90, 0));
             menuPose.position += menuPose.Right * offset * 0.03f;
             menuPose.position += menuPose.Up * (size.y / 2) * U.cm;
+
 
             // Hand window
             UI.WindowBegin("Point Cloud", ref menuPose);
@@ -517,6 +437,92 @@ namespace RAZR_PointCRep.Show
             {
                 AssetWindow(); //if bool is true, enable window. WIll automatically uninitialize window if false since it checks per frame
             }
+
+        }
+
+
+
+        List<IAsset> filteredAssets = new List<IAsset>();
+        Type filterType = typeof(IAsset);
+        float filterScroll = 0;
+        const int filterScrollCt = 12;
+
+        /// <summary>
+        /// Visualizes models in the asset window
+        /// </summary>
+        /// <param name="item"></param>
+        void VisualizeModel(Model item)
+        {
+            UI.Model(item, V.XX(UI.LineHeight));
+            UI.SameLine();
+        }
+
+        /// <summary>
+        /// Updates the Asset window with the chosen filter
+        /// </summary>
+        /// <param name="type"></param>
+        void UpdateFilter(Type type)
+        {
+            filterType = type;
+            filterScroll = 0.0f;
+            filteredAssets.Clear();
+
+            // Here's where the magic happens! `Assets.Type` can take a Type, or a
+            // generic <T>, and will give a list of all assets that match that
+            // type!
+            filteredAssets.AddRange(Assets.Type(filterType));
+        }
+
+        /// <summary>
+        /// Shows Models availible to use for point clouds
+        /// </summary>
+        //originally going to use file picker, according to research it doesn't run natively on stereokit
+        public void AssetWindow()
+        {
+            UISettings settings = UI.Settings;
+            float height = filterScrollCt * (UI.LineHeight + settings.gutter) + settings.margin * 2;
+
+            UI.WindowBegin("Menu", ref simpleWinPose, V.XY(0.5f, height));
+            UI.LayoutPushCut(UICut.Left, 0.08f);
+            UI.PanelAt(UI.LayoutAt, UI.LayoutRemaining);
+
+            UI.Label("Filter");
+
+            UI.HSeparator();
+
+            Vec2 size1 = new Vec2(0.08f, 0);
+
+            // A radio button selection for what to filter by
+
+            if (UI.Radio("Model", filterType == typeof(Model), size1)) UpdateFilter(typeof(Model));
+            UI.SameLine();
+            //if (UI.Radio("All", filterType == typeof(IAsset), size1)) UpdateFilter(typeof(IAsset));
+
+            UI.LayoutPop();
+
+            UI.LayoutPushCut(UICut.Right, UI.LineHeight);
+            UI.VSlider("scroll", ref filterScroll, 0, Math.Max(0, filteredAssets.Count - 3), 1, 0, UIConfirm.Pinch);
+            UI.LayoutPop();
+
+
+            // Used to visual the models in the button, as well as create a button with the asset visualization and name
+            for (int i = (int)filterScroll; i < Math.Min(filteredAssets.Count, (int)filterScroll + filterScrollCt); i++)
+            {
+                IAsset asset = filteredAssets[i];
+                UI.PushId(i);
+                switch (asset)
+                {
+                    case Model item: VisualizeModel(item); break;
+                }
+                UI.PopId();
+                if (UI.Button(string.IsNullOrEmpty(asset.Id) ? "(null)" : asset.Id, V.XY(UI.LayoutRemaining.x, 0))) // When pressed, will create point cloud of model based of of vertices in model
+                {
+                    Model model = Model.FromFile(string.IsNullOrEmpty(asset.Id) ? "(null)" : asset.Id);
+                    cloud = new PointCloud(pointSize, model);
+                    cloudScale = 0.5f / model.Bounds.dimensions.Length;
+                }
+            }
+            UI.WindowEnd();
         }
         static bool HandFacingHead(Handed handed)
         {
