@@ -1,5 +1,4 @@
-![Logo](Media/ResonantSciencesLogo.png)
-# RAZR Point Cloud Representation - RAZR_PointCRep
+# VR Point Cloud File Visualizer
 
 ## Table of Contents
 - [About](https://github.com/LorelaiDavis/RAZR_PointCRep?tab=readme-ov-file#about)
